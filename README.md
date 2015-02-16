@@ -3,6 +3,13 @@
 Client from service image api
 
 
+Beta Version
+================
+
+**Dont' use in production.**
+
+
+
 Installation
 ==============
 
