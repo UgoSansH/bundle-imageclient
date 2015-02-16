@@ -1,0 +1,33 @@
+parameters:
+    ugosansh_image_client.image_default: ''
+    ugosansh_image_client.entity.class:  Ugosansh\Bundle\Image\ClientBundle\Entity\Image
+
+services:
+    ugosansh_image_client.manager:
+        class: Ugosansh\Bundle\Image\ClientBundle\Manager\ImageManager
+        calls:
+            - [ setEntityClass, [ %ugosansh_image_client.entity.class% ] ]
+            - [ setClient, [ @ugosansh_image_client.client_api ] ]
+
+    ugosansh_image_client.twig_extension:
+        class: Ugosansh\Bundle\Image\ClientBundle\Twig\Extension\ImageExtension
+        calls:
+            - [ setManager, [ @ugosansh_image_client.manager ] ]
+            - [ setDefault, [ %ugosansh_image_client.image_default% ] ]
+        tags:
+            - { name: twig.extension, name: ugosansh_image }
+
+    ugosansh_image.image.simple.form_type:
+        class: Ugosansh\Bundle\Image\ClientBundle\Form\Type\SimpleImageType
+        arguments:
+            - %ugosansh_image_client.entity.class%
+        tags:
+            - { name: form.type, alias: ugosansh_image_simple }
+
+    ugosansh_image.image.form_type:
+        class: Ugosansh\Bundle\Image\ClientBundle\Form\Type\ImageType
+        arguments:
+            - %ugosansh_image_client.entity.class%
+        tags:
+            - { name: form.type, alias: ugosansh_image }
+
