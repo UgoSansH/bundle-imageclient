@@ -1,0 +1,13 @@
+{
+    "name": "ugosansh/bundle-clientimage",
+    "license": "MIT",
+    "type": "bundle",
+    "description": "Client bundle from image api service (bundle-apiimage)",
+    "autoload": {
+        "psr-0": { "": "src/" }
+    },
+    "require": {
+        "php"                   : ">=5.4",
+        "m6web/wsclient-bundle" : "~5.1"
+    }
+}
