@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Image
  */
-class Image implements ImageInterface
+class Image implements ImageInterface, \JsonSerializable
 {
     /**
      * @var integer
@@ -103,6 +103,27 @@ class Image implements ImageInterface
     public function __construct()
     {
         $this->links = [];
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id'         => $this->id,
+            'source'     => $this->source,
+            'title'      => $this->title,
+            'slug'       => $this->slug,
+            'mimeType'   => $this->mimeType,
+            'extension'  => $this->extension,
+            'width'      => $this->width,
+            'height'     => $this->height,
+            'weight'     => $this->weight,
+            'metadata'   => $this->metadata,
+            'dateCreate' => $this->dateCreate ? $this->dateCreate->format('d-m-Y H:i:s') : null,
+            'dateUpdate' => $this->dateUpdate ? $this->dateUpdate->format('d-m-Y H:i:s') : null,
+            'href'       => $this->links['url']
+        ];
+
+
     }
 
     /**
