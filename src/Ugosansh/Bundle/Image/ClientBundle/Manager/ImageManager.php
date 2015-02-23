@@ -240,7 +240,7 @@ class ImageManager
      */
     public function delete($id)
     {
-        $request = $this->client->createRequest('DELETE', sprintf('/v1/images/%s', $id));
+        $request = $this->client->createRequest('DELETE', sprintf('/v1/images/%s', $id), ['body' => '{}']);
         $response = $this->client->send($request);
 
         if (!$this->isValidResponse($response)) {
