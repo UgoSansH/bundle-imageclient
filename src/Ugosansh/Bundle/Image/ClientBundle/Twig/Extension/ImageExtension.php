@@ -55,6 +55,9 @@ class ImageExtension extends Twig_Extension
             ),
             'image_render' => new \Twig_Function_Method($this, 'getImageTag',
                 array('is_safe' => array('js', 'html'))
+            ),
+            'image_default' => new \Twig_Function_Method($this, 'getDefaultImageTag',
+                array('is_safe' => array('js', 'html'))
             )
         );
     }
@@ -121,7 +124,20 @@ class ImageExtension extends Twig_Extension
         }
 
         return $this->generateTag($attr);
+    }
 
+    /**
+     * Create img html tag
+     *
+     * @param array $attr Optional attributes
+     *
+     * @return string
+     */
+    public function getDefaultImageTag(array $attr = [])
+    {
+        $attr['src'] = $this->default;
+
+        return $this->generateTag($attr);
     }
 
     /**
