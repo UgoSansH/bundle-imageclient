@@ -264,8 +264,8 @@ class ImageManager
      */
     public function getUrl($id, $width = null, $height = null, $crop = null)
     {
-        if ($image = $this->getInfo()) {
-            return $image['_links']['url']['href'];
+        if ($image = $this->getInfo($id, $width, $height, $crop)) {
+            return $image->getLink('url');
         }
 
         return null;
