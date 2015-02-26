@@ -234,17 +234,17 @@ class ImageManager
     /**
      * delete
      *
-     * @param integer $id
+     * @param ImageInterface $image
      *
      * @return boolean
      */
-    public function delete($id)
+    public function delete(ImageInterface $image)
     {
-        $request = $this->client->createRequest('DELETE', sprintf('/v1/images/%s', $id), ['body' => '{}']);
+        $request = $this->client->createRequest('DELETE', sprintf('/v1/images/%s', $image->getId()), ['body' => '{}']);
         $response = $this->client->send($request);
 
         if (!$this->isValidResponse($response)) {
-            $this->log('error', sprintf('Failed to remove image "%s"', $id, ['response' => $response]));
+            $this->log('error', sprintf('Failed to remove image "%s"', $image->getId(), ['response' => $response]));
 
             return false;
         }
