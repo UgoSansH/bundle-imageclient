@@ -173,9 +173,9 @@ class ImageManager
         $url = '';
 
         if (!is_null($width)) {
-            $url = sprintf('/app_dev.php/images/%s-%s-%s-%s.json', $id, $width, $height, $crop);
+            $url = sprintf('/v1/images/%s-%s-%s-%s.json', $id, $width, $height, $crop);
         } else {
-            $url = sprintf('/app_dev.php/images/%s', $id);
+            $url = sprintf('/v1/images/%s', $id);
         }
 
         $response = $this->client->get($url);
@@ -203,7 +203,7 @@ class ImageManager
         if ($image->getId()) {
             $request = $this->client->createRequest(
                 'PUT',
-                sprintf('/app_dev.php/images/%s', $image->getId()),
+                sprintf('/v1/images/%s', $image->getId()),
                 [
                     'headers' => ['Content-Type: application/json'],
                     'body'    => $body
@@ -212,7 +212,7 @@ class ImageManager
         } else {
             $request = $this->client->createRequest(
                 'POST',
-                '/app_dev.php/images/',
+                '/v1/images/',
                 [
                     'headers' => ['Content-Type: application/json'],
                     'body'    => $body
@@ -285,8 +285,7 @@ class ImageManager
     public function generateUrl($id, $width, $height, $crop, $extension)
     {
         return sprintf(
-            '%s/v1/images/%s-%s-%s-%s.%s',
-            $this->baseUrl,
+            '/v1/images/%s-%s-%s-%s.%s',
             $id,
             $width,
             $height,
