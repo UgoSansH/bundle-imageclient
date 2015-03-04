@@ -129,6 +129,8 @@ class ImageManager
 
         if ($image->getFile()) {
             $content['binarySource'] = base64_encode(file_get_contents($image->getFile()->getRealPath()));
+        } else {
+            $content['binarySource'] = $image->getBinarySource();
         }
 
         return $content;
