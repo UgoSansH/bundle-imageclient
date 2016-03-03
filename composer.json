@@ -9,6 +9,6 @@
     "require": {
         "php"                      : ">=5.4",
         "ugosansh/component-image" : "~0.0.6",
-        "m6web/wsclient-bundle"    : "~5.1"
+        "m6web/guzzle-http-bundle" : "~1.4"
     }
 }
