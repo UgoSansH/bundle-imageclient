@@ -3,8 +3,8 @@
 namespace Ugosansh\Bundle\Image\ClientBundle\Manager;
 
 use Ugosansh\Component\Image\ImageInterface;
-use M6Web\Bundle\WSClientBundle\Adapter\Client\ClientAdapterInterface;
-use M6Web\Bundle\WSClientBundle\Adapter\Response\ResponseAdapterInterface;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Response;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -13,7 +13,7 @@ use Psr\Log\LoggerInterface;
 class ImageManager
 {
     /**
-     * ClientAdapterInterface $client
+     * Client $client
      */
     protected $client;
 
@@ -30,10 +30,10 @@ class ImageManager
     /**
      * __constrct
      *
-     * @param ClientAdapterInterface $client
-     * @param string                       $entityClass
+     * @param Client $client
+     * @param string $entityClass
      */
-    public function __construct(ClientAdapterInterface $client = null, $entityClass = '')
+    public function __construct(Client $client = null, $entityClass = '')
     {
         $this->client      = $client;
         $this->logger      = null;
@@ -47,11 +47,11 @@ class ImageManager
     /**
      * Check if valid response
      *
-     * @param ResponseAdapterInterface $response
+     * @param Response $response
      *
      * @return boolean
      */
-    protected function isValidResponse(ResponseAdapterInterface $response)
+    protected function isValidResponse(Response $response)
     {
         return ($response->getStatusCode() < 200 || $response->getStatusCode() >= 400) ? false : true;
     }
@@ -98,8 +98,8 @@ class ImageManager
             ->setPath($content['path'])
             ->setMimeType($content['mime_type'])
             ->setExtension($content['extension'])
-            ->setWidth($content['width'])
-            ->setHeight($content['height'])
+            ->setWidth(isset($content['width']) ? $content['width'] : null)
+            ->setHeight(isset($content['height']) ? $content['height'] : null)
             ->setDateCreate(new \DateTime($content['date_create']))
         ;
 
@@ -192,6 +192,37 @@ class ImageManager
     }
 
     /**
+     * Get base64
+     *
+     * @param integer $id
+     * @param integer $width
+     * @param integer $height
+     * @param integer $crop
+     *
+     * @return string
+     */
+    public function getBase64($id, $width = null, $height = null, $crop = null)
+    {
+        if ($image = $this->getInfo($id, $width, $height, $crop)) {
+            $url      = $image->getLink('url');
+            $response = $this->client->get($url);
+
+            if ($this->isValidResponse($response)) {
+                if ($response->getBody() instanceof \GuzzleHttp\Psr7\Stream) {
+                    return base64_encode($response->getBody()->getContents());
+                } else {
+                    ld(get_class($response->getBody()));die;
+                }
+            } else {
+                $this->log('error', 'Failed to get image info', ['response' => $response]);
+            }
+
+        }
+
+        return null;
+    }
+
+    /**
      * save
      *
      * @param ImageInterface $image
@@ -200,31 +231,28 @@ class ImageManager
      */
     public function save(ImageInterface $image)
     {
-        $body = $this->entityToJson($image);
+        $body     = $this->entityToJson($image);
+        $response = null;
 
         if ($image->getId()) {
-            $request = $this->client->createRequest(
-                'PUT',
+            $response = $this->client->put(
                 sprintf('/v1/images/%s', $image->getId()),
                 [
-                    'headers' => ['Content-Type: application/json'],
-                    'body'    => $body
+                    'headers'     => ['Content-Type: application/json'],
+                    'form_params' => $body
                 ]
             );
         } else {
-            $request = $this->client->createRequest(
-                'POST',
-                '/v1/images/',
+            $response = $this->client->post('/v1/images/',
                 [
-                    'headers' => ['Content-Type: application/json'],
-                    'body'    => $body
+                    'headers'     => ['Content-Type: application/json'],
+                    'form_params' => $body
                 ]
             );
         }
 
-        $response = $this->client->send($request);
-
         if (!$this->isValidResponse($response)) {
+
             $this->log('error', sprintf('Failed to save image "%s"', $image->getTitle()), ['response' => $response]);
 
             return false;
@@ -242,8 +270,7 @@ class ImageManager
      */
     public function delete(ImageInterface $image)
     {
-        $request = $this->client->createRequest('DELETE', sprintf('/v1/images/%s', $image->getId()), ['body' => '{}']);
-        $response = $this->client->send($request);
+        $response = $this->client->delete(sprintf('/v1/images/%s', $image->getId()), ['body' => '{}']);
 
         if (!$this->isValidResponse($response)) {
             $this->log('error', sprintf('Failed to remove image "%s"', $image->getId(), ['response' => $response]));
@@ -299,11 +326,11 @@ class ImageManager
     /**
      * Set client
      *
-     * @param ClientAdapterInterface $client
+     * @param Client $client
      *
      * @return ImageManager
      */
-    public function setClient(ClientAdapterInterface $client)
+    public function setClient(Client $client)
     {
         $this->client = $client;
 
