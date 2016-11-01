@@ -4,6 +4,7 @@ namespace Ugosansh\Bundle\Image\ClientBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 /**
  * Simple Image form type
@@ -36,7 +37,7 @@ class SimpleImageType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('file', 'file', [
+            ->add('file', TextType::class, [
                 'label'    => !empty($options['label']) ? $options['label'] : 'Image',
                 'attr'     => ['accept' => 'image/png|image/jpg|image/jpeg|image/gif'],
                 'required' => array_key_exists('required', $options) ? $options['required'] : false
