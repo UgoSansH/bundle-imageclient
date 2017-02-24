@@ -109,7 +109,7 @@ class ImageExtension extends Twig_Extension
      *
      * @return string
      */
-    public function renderWithouSize(ImageInterface $image, array $attr = [])
+    public function renderWithoutSize(ImageInterface $image, array $attr = [])
     {
         $attr = array_merge([
             'src'    => $image->getLink('url'),
@@ -133,6 +133,13 @@ class ImageExtension extends Twig_Extension
     public function getImageTag($id, $width = null, $height = null, $crop = null, array $attr = [])
     {
         if ($image = $this->manager->getInfo($id, $width, $height, $crop)) {
+            if (is_null($width) && is_null($height)) {
+                $attr['src'] = $image->getLink('url');
+                $attr['alt'] = $image->getTitle();
+
+                return $this->generateTag($attr);
+            }
+
             return $this->render($image, $attr);
         }
 
@@ -156,7 +163,7 @@ class ImageExtension extends Twig_Extension
     public function getImageTagNoSpecificSize($id)
     {
         if ($image = $this->manager->getInfo($id)) {
-            return $this->renderWithouSize($image);
+            return $this->renderWithoutSize($image);
         }
 
         $attr['src'] = $this->default;
