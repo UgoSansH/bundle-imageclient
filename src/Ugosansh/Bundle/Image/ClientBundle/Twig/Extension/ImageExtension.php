@@ -3,6 +3,7 @@
 namespace Ugosansh\Bundle\Image\ClientBundle\Twig\Extension;
 
 use Twig_Extension;
+use Twig_SimpleFunction;
 use Ugosansh\Component\Image\ImageInterface;
 use Ugosansh\Bundle\Image\ClientBundle\Manager\ImageManager;
 
@@ -49,20 +50,20 @@ class ImageExtension extends Twig_Extension
      */
     public function getFunctions()
     {
-        return array(
-            'image_path' => new \Twig_Function_Method($this, 'getUrl',
-                array('is_safe' => array('js', 'html'))
-            ),
-            'image_render' => new \Twig_Function_Method($this, 'getImageTag',
-                array('is_safe' => array('js', 'html'))
-            ),
-            'image_render_no_specific_size' => new \Twig_Function_Method($this, 'getImageTagNoSpecificSize',
-                array('is_safe' => array('js', 'html'))
-            ),
-            'image_default' => new \Twig_Function_Method($this, 'getDefaultImageTag',
-                array('is_safe' => array('js', 'html'))
-            )
-        );
+        return [
+            new Twig_SimpleFunction('image_path', [$this, 'getUrl'], [
+                ['is_safe' => ['js', 'html']]
+            ]),
+            new Twig_SimpleFunction('image_render', [$this, 'getImageTag'], [
+                ['is_safe' => ['js', 'html']]
+            ]),
+            new Twig_SimpleFunction('image_render_no_specific_size', [$this, 'getImageTagNoSpecificSize'], [
+                ['is_safe' => ['js', 'html']]
+            ]),
+            new Twig_SimpleFunction('image_default', [$this, 'getDefaultImageTag'], [
+                ['is_safe' => ['js', 'html']]
+            ]),
+        ];
     }
 
     /**
